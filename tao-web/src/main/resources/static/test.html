@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <title>河北路政信息化管理平台</title>
+    <link rel="stylesheet" href="./layui/css/layui.css">
+    <style>
+        .sysNotice .layui-table {
+            margin-top: 0;
+            border-left: 5px solid #e2e2e2;
+        }
+
+        .layui-elem-quote.title {
+            padding: 10px 15px;
+            margin-bottom: 0;
+        }
+
+        .sysNotice {
+            width: 75%;
+        }
+
+        .code {
+            color: #c7254e;
+            background-color: #f9f2f4;
+            border-radius: 2px;
+            padding: 4px 2px 0;
+        }
+    </style>
+</head>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <a href="javascript:openLayer();">
+            <div class="layui-logo">河北路政信息化管理平台</div>
+        </a>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layui-this">
+                <a href="javascript:initLeftMenu('home')">首页</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:initLeftMenu('yjjy')">应急救援</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:initLeftMenu('zfws')">执法文书</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="javascript:void(0)">资源管理</a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="javascript:initLeftMenu('czspc')">车载视频车</a>
+                    </dd>
+                    <dd>
+                        <a href="">GPS车辆定位</a>
+                    </dd>
+                    <dd>
+                        <a href="">对讲机定位</a>
+                    </dd>
+                    <dd>
+                        <a href="">对讲机管理</a>
+                    </dd>
+                    <dd>
+                        <a href="">地理位置管理系统</a>
+                    </dd>
+                    <dd>
+                        <a href="">执法记录仪</a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:initLeftMenu('tjbb')">统计报表</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:initLeftMenu('zczb')">资产装备</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:initLeftMenu('xtgn')">系统功能</a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="./res/touxiang.png" class="layui-nav-img"> 管理员
+                </a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="">基本资料</a>
+                    </dd>
+                    <dd>
+                        <a href="">修改密码</a>
+                    </dd>
+                    <dd>
+                        <a href="">退出登录</a>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" id="leftMenuContainer">
+
+                <li class="layui-nav-item layui-nav-itemed" v-for="menu in menuArr">
+                    <a class="" @click="addTab($event,menu)" v-bind:tab_url="menu.url" v-html="menu.name"></a>
+                    <dl class="layui-nav-child" v-if="menu.childMenu.length>0" v-for="childMenu in menu.childMenu">
+                        <dd>
+                            <a href="javascript:;" v-html="childMenu.name"></a>
+                        </dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" >
+
+    </div>
+    <div class="layui-footer">
+        河北省高速公路路政总队
+    </div>
+</div>
+<script src="layui/layui.all.js"></script>
+<script src="./js/jquery.js"></script>
+<script src="./js/vue.js"></script>
+<script src="./res/left-menu.js"></script>
+<script>
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    var element = layui.element;
+    var util = layui.util;
+    var table = layui.table;
+</script>
+<script src="./js/layTabPlus.js"></script>
+<script src="./js/page/index.js"></script>
+<script>
+    function openLayer(_url, _title, _areaArr, _endFn) {
+        var cruArea = ['1040px', '680px'];
+        if (_areaArr && _areaArr.length == 2) {
+            cruArea = _areaArr;
+        }
+        layer.open({
+            type: 2,
+            area: cruArea,
+            shade: [0.8],
+            resize: true,
+            title: _title,
+            scrollbar: false,
+            content: [_url, 'no'],
+            end: function () {
+                _endFn.executeFun();
+            }
+        });
+    }
+
+    function setIframeHeight(_iframe) {
+        _iframe.height = document.documentElement.clientHeight - 200;
+    }
+
+    function initLeftMenu(_id) {
+        leftMenuVM.menuArr = leftMenu[_id]
+    }
+
+    layui.use('element', function () {
+        element = layui.element;
+    });
+
+    function addTabFrame(obj, _menu) {
+        var tab_url = obj;
+        var tab_title = tab_url;
+        var iframe_id = 'ltp_' + Date.now().toString(36);
+        if (obj instanceof HTMLElement) {
+            var tab_jump = obj.getAttribute('tab_jump');
+            if (tab_jump) {
+                this._opt.tab_jump = true;
+            }
+            tab_url = obj.getAttribute('tab_url');
+            tab_title = obj.innerHTML;
+        }
+        if (cruFrames[tab_url] == null) {
+            tab_title += ' <i class="layui-icon layui-icon-refresh" f_id="' + iframe_id + '"></i>';
+            var tab_jump_str = 'sandbox="allow-scripts allow-same-origin allow-popups"';
+            element.tabAdd('left-menus', {
+                title: tab_title
+                ,
+                content: '<iframe id="' + iframe_id + '" src="' + tab_url + '" style="width:100%;" height="100%;" onload="setIframeHeight(this)" frameborder="0" scrolling="auto" ' + tab_jump_str + '></iframe>' //支持传入html
+                ,
+                id: tab_url
+            });
+            cruFrames[tab_url] = _menu;
+        }
+        element.tabChange('left-menus', tab_url);
+    }
+
+    var leftMenuVM;
+    var cruFrames = {};
+    $(function () {
+        leftMenuVM = new Vue({
+            el: '#leftMenuContainer',
+            data: {menuArr: []},
+            methods: {
+                addTab: function (event, _menu) {
+                    if (_menu.childMenu && _menu.childMenu.length > 0) {
+                        return;
+                    }
+                    addTabFrame(event.currentTarget, $(event.currentTarget).text());
+                }
+            },
+            updated: function () {
+                this.$nextTick(function () {
+                    element.render('nav');
+                })
+            }
+        });
+        leftMenuVM.menuArr = leftMenu['home'];
+        element.on('tabDelete(left-menus)', function (data) {
+            var tab_id = $(this.parentNode).attr('lay-id');
+            delete cruFrames[tab_id];
+        });
+        $(".layui-tab-title").on('click', ".layui-icon-refresh", function () {
+            var iframe = $("#" + $(this).attr('f_id'))[0];
+            iframe.src = iframe.src;
+        });
+        initTestData();
+    });
+    function initTestData(){
+        $.ajax({
+            type: 'GET',
+            url: '../resources/demo/selectAllUser',
+            data: {},
+            dataType: "json",
+            success: function(ret){
+                $('.layui-body').html(JSON.stringify(ret));
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

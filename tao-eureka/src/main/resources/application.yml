@@ -1,0 +1,15 @@
+eureka:
+    client:
+        fetch-registry: false
+        register-with-eureka: false
+    instance:
+        hostname: localhost
+    server:
+        enableSelfPreservation: false
+logging:
+    file: F:\logs\server-logs\${spring.application.name}.log
+server:
+    port: 8761
+spring:
+    application:
+        name: tao-eureka

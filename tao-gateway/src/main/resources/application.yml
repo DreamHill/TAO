@@ -1,0 +1,22 @@
+server:
+  port: 80
+spring:
+  application:
+    name: tao-gateway
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+logging:
+    file: F:\logs\server-logs\${spring.application.name}.log
+zuul:
+  routes:
+    resource-service: #资源管理模块：各种资源信息
+      path: /resources/**
+      serviceId: resources-service
+    web-service: #web前端页面服务
+      path: /web/**
+      serviceId: web-service
+    163: #测试使用
+      path: /163
+      url: http://www.163.com/

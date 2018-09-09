@@ -1,0 +1,16 @@
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka/
+logging:
+    pattern:
+      console: "%d-%msg%n"
+      file: F:\logs\server-logs\${spring.application.name}.log
+server:
+    port: 8088
+    tomcat:
+        uri-encoding: UTF-8
+        max-http-post-size: 102400000
+spring:
+    application:
+        name: web-service
